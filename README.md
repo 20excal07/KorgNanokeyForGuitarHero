@@ -9,6 +9,11 @@ You don't have to configure anything on the vJoy side of things, its default set
 
 ![alt text](https://github.com/20excal07/KorgNanokeyForGuitarHero/raw/master/NanokeyGH.png)
 
+## Video demonstration with the original nanoKEY
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=asn2Fqrurlk
+" target="_blank"><img src="http://img.youtube.com/vi/asn2Fqrurlk/maxresdefault.jpg" 
+alt="alt_text" width="480" height="270" border="5" /></a>
+
 ## **How do I play with this?**
 Hold the keyboard such that it faces away from you. The right end of the keyboard should be resting on your left hand, with your fingers fretting on the keys like you would a regular Guitar Hero controller. Reach for the strum keys with your right index and middle fingers with your right hand hovering slightly above the keyboard (kinda like playing a real bass guitar), and place your ring finger on the MOD button for star power/overdrive. Make sure you are sitting down for this so that the left end of the keyboard has something to rest on while you are playing.
 
