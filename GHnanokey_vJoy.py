@@ -32,7 +32,7 @@ def update():
 		inputmode.append('mode2')
 		inputmode.remove('mode1')
 
-	# mapping MIDI inputs to PPJoy
+	# mapping MIDI inputs to vJoy
 	if 'mode1' in inputmode:
 		vJoy[0].setButton(6,G in pressed)	#green
 		vJoy[0].setButton(4,R in pressed)	#red
@@ -54,12 +54,12 @@ def update():
 			vJoy[0].setButton(7,0)
 			vJoy[0].setButton(3,0)
 
-	vJoy[0].setButton(9,'68' in pressed)		#start
+	vJoy[0].setButton(9,'68' in pressed)		#start button
 	vJoy[0].setButton(12,'49' in pressed)		#strum up
 	vJoy[0].setButton(13,'48' in pressed)		#strum down
-	vJoy[0].setButton(8,'cc1' in pressed)		#overdrive
-	vJoy[0].setButton(14,'70' in pressed)		#left
-	vJoy[0].setButton(15,'66' in pressed)		#right
+	vJoy[0].setButton(8,'cc1' in pressed)		#overdrive/star power
+	vJoy[0].setButton(14,'70' in pressed)		#navigate left
+	vJoy[0].setButton(15,'66' in pressed)		#navigate right
 	vJoy[0].setButton(11,'bend' in pressed)		#whammy
 
 	# debug stuff
