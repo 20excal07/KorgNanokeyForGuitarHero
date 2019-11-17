@@ -17,7 +17,7 @@ Hold the keyboard such that it faces away from you. The right end of the keyboar
 ## **The fret buttons are too close to the edge of the keyboard, it's uncomfy!**
 Increment the `offset` variable in the script to shift the frets further down (to the left of) the keyboard.
 
-## "Guitar on Keys mode"? What's that?"
+## "Guitar on Keys mode"? What's that?
 This mode is intended specifically for use with Keys charts in [_Phase Shift_](http://www.dwsk.co.uk/index_phase_shift.html).
 
 When you press this button, the script switches to a mode where it essentially emulates the ability to play Keys charts with a guitar controller, like in _Rock Band 3_. The downside to this mode is that you won't be able to see visual feedback of frets being held down, and you will still need to strum every single note, even if they're like an eighth note apart from each other where they would normally be converted to HOPOs in Rock Band.
