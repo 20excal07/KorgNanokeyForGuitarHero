@@ -26,3 +26,8 @@ Press the other mode button to exit this mode.
 
 ## Can I use this with the original nanoKEY?
 Yes you can, however I strongly recommend against it due to how cheaply the keyboard was built. You will likely be tapping hard on the keys to strum, and the keys will eventually fall off once enough wear has built up on the mechanical springs. Save up for a nanoKEY2 if you can... or just buy a Guitar Hero/Rock Band guitar controller like a normal person. :p
+
+## Anything else?
+Yes. Get the KORG Kontrol Editor software ([for Win7/8.1](https://www.korg.com/us/support/download/driver/1/133/1356/) | [for Win10](https://www.korg.com/us/support/download/driver/1/133/3541/)) and make sure to do the following. It'll make sure all the buttons being used here are "digital" and will overall just be much much more reliable to use. To apply the settings, click "Communications" > "Write Scene Data". Confirm when asked. 
+
+![alt text](https://github.com/20excal07/KorgNanokeyForGuitarHero/raw/master/korgkontrol.png)
