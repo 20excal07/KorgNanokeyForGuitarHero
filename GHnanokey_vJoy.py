@@ -57,8 +57,8 @@ def update():
 			vJoy[0].setButton(b_GRN,G in pressed)
 			vJoy[0].setButton(b_RED,R in pressed)
 			vJoy[0].setButton(b_YLW,Y in pressed)
-			vJoy[0].setButton(B_BLU,B in pressed)
-			vJoy[0].setButton(B_ORN,O in pressed)
+			vJoy[0].setButton(b_BLU,B in pressed)
+			vJoy[0].setButton(b_ORN,O in pressed)
 		elif G in pressed or R in pressed or Y in pressed or B in pressed or O in pressed:
 			vJoy[0].setButton(b_GRN,0)
 			vJoy[0].setButton(b_RED,0)
