@@ -3,10 +3,21 @@ def update():
 	status	= midi[0].data.status
 	note	= midi[0].data.buffer[0]
 	vel		= midi[0].data.buffer[1]
-	rvel	= round(filters.mapRange(vel,0,127,-1.2,1.2),0)
-
-	velocity = str(vel) + ' (' + str(rvel) + ')'
+	
+	#reset the POV hat when nothing pressed
+	vJoy[0].setAnalogPov(0, -1)
+	
 	inputs = ""
+	
+	if '48' in pressed:		#dpad guard Y axis
+		lastStrum = '48'
+	elif '49' in pressed:
+		lastStrum = '49'
+	
+	if '66' in pressed:		#dpad guard X axis
+		lastNav = '66'
+	elif '70' in pressed:
+		lastNav = '70'
 
 	# listening for MIDI inputs & stores/removes the button inputs to/from the array as appropriate
 	if status.Equals(MidiStatus.NoteOn):
@@ -19,9 +30,9 @@ def update():
 	elif status.Equals(MidiStatus.Control) and vel == 0 and ('cc' + str(note)) in pressed:
 		pressed.remove('cc' + str(note))
 
-	if status.Equals(MidiStatus.PitchBendChange) and rvel != 0 and 'bend' not in pressed:
+	if status.Equals(MidiStatus.PitchBendChange) and vel != 64 and 'bend' not in pressed:
 		pressed.append('bend')
-	elif status.Equals(MidiStatus.PitchBendChange) and rvel == 0 and 'bend' in pressed:
+	elif status.Equals(MidiStatus.PitchBendChange) and vel == 64 and 'bend' in pressed:
 		pressed.remove('bend')
 
 	# switch between button modes	
@@ -34,34 +45,41 @@ def update():
 
 	# mapping MIDI inputs to vJoy
 	if 'mode1' in inputmode:
-		vJoy[0].setButton(6,G in pressed)	#green
-		vJoy[0].setButton(4,R in pressed)	#red
-		vJoy[0].setButton(5,Y in pressed)	#yellow
-		vJoy[0].setButton(7,B in pressed)	#blue
-		vJoy[0].setButton(3,O in pressed)	#orange
+		vJoy[0].setButton(b_GRN,G in pressed)	#green
+		vJoy[0].setButton(b_RED,R in pressed)	#red
+		vJoy[0].setButton(b_YLW,Y in pressed)	#yellow
+		vJoy[0].setButton(b_BLU,B in pressed)	#blue
+		vJoy[0].setButton(b_ORN,O in pressed)	#orange
 
+	# guitar on keys mode - experimental!
 	if 'mode2' in inputmode:
 		if '48' in pressed or '49' in pressed:
-			vJoy[0].setButton(6,G in pressed)
-			vJoy[0].setButton(4,R in pressed)
-			vJoy[0].setButton(5,Y in pressed)
-			vJoy[0].setButton(7,B in pressed)
-			vJoy[0].setButton(3,O in pressed)
+			vJoy[0].setButton(b_GRN,G in pressed)
+			vJoy[0].setButton(b_RED,R in pressed)
+			vJoy[0].setButton(b_YLW,Y in pressed)
+			vJoy[0].setButton(B_BLU,B in pressed)
+			vJoy[0].setButton(B_ORN,O in pressed)
 		elif G in pressed or R in pressed or Y in pressed or B in pressed or O in pressed:
-			vJoy[0].setButton(6,0)
-			vJoy[0].setButton(4,0)
-			vJoy[0].setButton(5,0)
-			vJoy[0].setButton(7,0)
-			vJoy[0].setButton(3,0)
+			vJoy[0].setButton(b_GRN,0)
+			vJoy[0].setButton(b_RED,0)
+			vJoy[0].setButton(b_YLW,0)
+			vJoy[0].setButton(b_BLU,0)
+			vJoy[0].setButton(b_ORN,0)
 
-	vJoy[0].setButton(9,'68' in pressed)		#start button
-	vJoy[0].setButton(12,'49' in pressed)		#strum up
-	vJoy[0].setButton(13,'48' in pressed)		#strum down
-	vJoy[0].setButton(8,'cc1' in pressed)		#overdrive/star power
-	vJoy[0].setButton(14,'70' in pressed)		#navigate left
-	vJoy[0].setButton(15,'66' in pressed)		#navigate right
-	vJoy[0].setButton(11,'bend' in pressed)		#whammy
+	#dpad guard
+	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
+	if '66' in pressed and '70' in pressed: pressed.remove(lastNav)
 
+	vJoy[0].setButton(b_start,'68' in pressed)		#start button
+	if '49' in pressed: vJoy[0].setAnalogPov(0, 0)		#strum up
+	if '48' in pressed: vJoy[0].setAnalogPov(0, 18000)	#strum down
+	vJoy[0].setButton(b_starPwr,'cc1' in pressed)		#overdrive/star power
+	if '66' in pressed: vJoy[0].setAnalogPov(0, 9000)	#navigate right
+	if '70' in pressed: vJoy[0].setAnalogPov(0, 27000)	#navigate left
+	
+	#whammy
+	vJoy[0].z = filters.mapRange(vel,0,127,0x0001,0x8000) if 'bend' in pressed else 0x4000
+	
 	# debug stuff
 	if 'mode1' in inputmode and 'mode2' not in inputmode:
 		mode = "1: Normal guitar mode"
@@ -72,7 +90,7 @@ def update():
 	diagnostics.watch(channel)
 	diagnostics.watch(status)
 	diagnostics.watch(note)
-	diagnostics.watch(velocity)
+	diagnostics.watch(vel)
 	diagnostics.watch(mode)
 
 	for x in pressed:
@@ -93,18 +111,28 @@ if starting:
 		return keys
 
 	keys = GenKeys(3,4)
-	offset = 0		#increase the offset to shift the fret buttons further down the keyboard
+	offset = 1		#increase the offset to shift the fret buttons further down the keyboard
 	G = keys[14-offset]
 	R = keys[13-offset]
 	Y = keys[12-offset]
 	B = keys[11-offset]
 	O = keys[10-offset]
 	
+	#vJoy button assignments
+	b_GRN = 0
+	b_RED = 1
+	b_YLW = 2
+	b_BLU = 3
+	b_ORN = 4
+	b_start = 5
+	b_starPwr = 6
+	
 	#debug stuff
 	whiteKeys = ""
 	for f in keys:
 		whiteKeys += '[' + str(f) + ']'
-
+		
+	lastStrum = lastNav = ''
 	pressed = []	
 	inputmode = ['mode1']
 	midi[0].update += update
