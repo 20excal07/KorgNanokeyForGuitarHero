@@ -3,7 +3,10 @@ FreePIE script for Korg nanoKEY/nanoKEY2 usage with Guitar Hero-esque rhythm gam
 
 [**Requires vJoy to be installed first.**](http://vjoystick.sourceforge.net/site/)
 
-You don't have to configure anything on the vJoy side of things, its default setup will work just fine. Just make sure at least one vJoy controller is active.
+Make sure at least one vJoy controller is active. You may not have to configure anything and its default settings may work off the bat, but just in case, make sure it (vJoy) at least has:
+  - the "Z" axis
+  - 1 continouous POV Hat Switch
+  - 7 buttons
 
 ### Intended/Default control scheme:
 
