@@ -2,7 +2,7 @@ def update():
 	channel	= midi[0].data.channel
 	status	= midi[0].data.status
 	note	= midi[0].data.buffer[0]
-	vel		= midi[0].data.buffer[1]
+	vel	= midi[0].data.buffer[1]
 	
 	#reset the POV hat when nothing pressed
 	vJoy[0].setAnalogPov(0, -1)
@@ -20,12 +20,12 @@ def update():
 		lastNav = '70'
 
 	# listening for MIDI inputs & stores/removes the button inputs to/from the array as appropriate
-	if status.Equals(MidiStatus.NoteOn):
+	if status.Equals(MidiStatus.NoteOn) and str(note) not in pressed:
 		pressed.append(str(note))	
 	elif status.Equals(MidiStatus.NoteOff) and str(note) in pressed:
 		pressed.remove(str(note))
 
-	if status.Equals(MidiStatus.Control) and vel != 0:
+	if status.Equals(MidiStatus.Control) and vel != 0 and ('cc' + str(note)) not in pressed:
 		pressed.append('cc' + str(note))	
 	elif status.Equals(MidiStatus.Control) and vel == 0 and ('cc' + str(note)) in pressed:
 		pressed.remove('cc' + str(note))
@@ -97,8 +97,24 @@ def update():
 		inputs += "[" + x + "]"
 
 	diagnostics.watch(inputs)
-
+	
 if starting:
+	#script settings
+	pollingRate = 60	#Hz; default is 60
+	fretOffset = 1		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	
+	#vJoy button assignments
+	b_GRN = 0
+	b_RED = 1
+	b_YLW = 2
+	b_BLU = 3
+	b_ORN = 4
+	b_start = 5
+	b_starPwr = 6
+
+	system.setThreadTiming(TimingTypes.HighresSystemTimer)
+	system.threadExecutionInterval = 1000 / pollingRate
+
 	#white keys mapping; thanks clipsey! <3
 	def GenKeys(octaves, rootoctave):
 		keys = [None] * (7*(octaves))
@@ -111,21 +127,11 @@ if starting:
 		return keys
 
 	keys = GenKeys(3,4)
-	offset = 1		#increase the offset to shift the fret buttons further down the keyboard
-	G = keys[14-offset]
-	R = keys[13-offset]
-	Y = keys[12-offset]
-	B = keys[11-offset]
-	O = keys[10-offset]
-	
-	#vJoy button assignments
-	b_GRN = 0
-	b_RED = 1
-	b_YLW = 2
-	b_BLU = 3
-	b_ORN = 4
-	b_start = 5
-	b_starPwr = 6
+	G = keys[14-fretOffset]
+	R = keys[13-fretOffset]
+	Y = keys[12-fretOffset]
+	B = keys[11-fretOffset]
+	O = keys[10-fretOffset]
 	
 	#debug stuff
 	whiteKeys = ""
