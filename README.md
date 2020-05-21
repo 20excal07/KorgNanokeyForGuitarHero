@@ -35,6 +35,9 @@ Press the other mode button to exit this mode.
 ## Can I use this with the original nanoKEY?
 Yes you can, however I strongly recommend against it due to how cheaply the keyboard was built. You will likely be tapping hard on the keys to strum, and the keys will eventually fall off once enough wear has built up on the mechanical springs. Save up for a nanoKEY2 if you can... or just buy a Guitar Hero/Rock Band guitar controller like a normal person. :p
 
+## Clone Hero-specific issue
+There seems to be an issue where overstrums can accidentally get registered, throwing your streak off as a result. This isn't an issue with the NanoKEY or FreePIE, but rather Clone Hero's lack of protection against unintentional inputs, which incidentally also allows players to spam the strum bar as fast as they can to hit ridiculuously dense(?) streak of notes. You can adjust the `pollingRate` variable to mitigate this issue for casual play. Lower rates around 20-30 Hz seem to help for most cases.
+
 ## Anything else?
 Yes. Get the KORG Kontrol Editor software ([for Win7/8.1](https://www.korg.com/us/support/download/driver/1/133/1356/) | [for Win10](https://www.korg.com/us/support/download/driver/1/133/3541/)) and make sure to do the following. It'll make sure all the buttons being used here are "digital" and will overall just be much much more reliable to use. To apply the settings, click "Communications" > "Write Scene Data". Confirm when asked. 
 
