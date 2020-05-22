@@ -2,12 +2,10 @@ def update():
 	channel	= midi[0].data.channel
 	status	= midi[0].data.status
 	note	= midi[0].data.buffer[0]
-	vel	= midi[0].data.buffer[1]
+	vel		= midi[0].data.buffer[1]
 	
 	#reset the POV hat when nothing pressed
 	vJoy[0].setAnalogPov(0, -1)
-	
-	inputs = ""
 	
 	if '48' in pressed:		#dpad guard Y axis
 		lastStrum = '48'
@@ -74,28 +72,42 @@ def update():
 	#whammy
 	vJoy[0].z = filters.mapRange(vel,0,127,0x0001,0x8000) if 'bend' in pressed else 0x4000
 	
-	# debug stuff
 	if 'mode1' in inputmode and 'mode2' not in inputmode:
 		mode = "1: Normal guitar mode"
 	elif 'mode2' in inputmode and 'mode1' not in inputmode:
 		mode = "2: Guitar on Keys mode"
-
-	diagnostics.watch(whiteKeys)	
-	diagnostics.watch(channel)
-	diagnostics.watch(status)
-	diagnostics.watch(note)
-	diagnostics.watch(vel)
+		
 	diagnostics.watch(mode)
-
-	for x in pressed:
-		inputs += "[" + x + "]"
-
-	diagnostics.watch(inputs)
+	
+	# debug stuff
+	if debug:
+		nanoKey = ""
+		controller = ""
+	
+		for x in pressed:
+			nanoKey += "[" + x + "]"
+			
+		for y in range(7):
+			if joystick[0].getDown(y):
+				controller += "█│"
+			else:
+				controller += "░│"		
+		
+		if joystick[0].pov[0] == 0: controller += "▲"
+		elif joystick[0].pov[0] == 18000: controller += "▼"
+			
+		diagnostics.watch(channel)
+		diagnostics.watch(status)
+		diagnostics.watch(note)
+		diagnostics.watch(vel)	
+		diagnostics.watch(nanoKey)
+		diagnostics.watch(controller)
 	
 if starting:
 	#script settings
 	pollingRate = 60	#Hz; default is 60
 	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	debug = 1			#turn this on to show the script working (may introduce a tiny bit of latency)
 	
 	#vJoy button assignments
 	b_GRN = 0
@@ -111,26 +123,30 @@ if starting:
 
 	#white keys mapping; thanks clipsey! <3
 	def GenKeys(octaves, rootoctave):
-		keys = [None] * (7*(octaves))
+		keys = [None] * (7*(octaves)+1)
 		matcher = [0,2,4,5,7,9,11]
 		index = 0
 		for i in range(0,octaves):
 			for m in matcher:
 				keys[index] = str((12*(i+rootoctave))+m)
 				index += 1				
-		return keys
+		keys[index] = str((12*(i+rootoctave))+12)		
+		return keys[::-1]
 
-	keys = GenKeys(3,4)
-	G = keys[14-fretOffset]
-	R = keys[13-fretOffset]
-	Y = keys[12-fretOffset]
-	B = keys[11-fretOffset]
-	O = keys[10-fretOffset]
+	keys = GenKeys(2,4)
+	G = keys[0+fretOffset]
+	R = keys[1+fretOffset]
+	Y = keys[2+fretOffset]
+	B = keys[3+fretOffset]
+	O = keys[4+fretOffset]
 	
-	#debug stuff
 	whiteKeys = ""
 	for f in keys:
 		whiteKeys += '[' + str(f) + ']'
+		
+	mode = "(press any key)"
+	diagnostics.watch(whiteKeys)
+	diagnostics.watch(mode)
 		
 	lastStrum = lastNav = ''
 	pressed = []	
