@@ -51,7 +51,7 @@ def update():
 		vJoy[0].setButton(b_BLU,B in pressed)	#blue
 		vJoy[0].setButton(b_ORN,O in pressed)	#orange
 
-	# guitar on keys mode - experimental!
+	# guitar on keys mode
 	if 'mode2' in inputmode:
 		if '48' in pressed or '49' in pressed:
 			vJoy[0].setButton(b_GRN,G in pressed)
@@ -59,12 +59,6 @@ def update():
 			vJoy[0].setButton(b_YLW,Y in pressed)
 			vJoy[0].setButton(b_BLU,B in pressed)
 			vJoy[0].setButton(b_ORN,O in pressed)
-		elif G in pressed or R in pressed or Y in pressed or B in pressed or O in pressed:
-			vJoy[0].setButton(b_GRN,0)
-			vJoy[0].setButton(b_RED,0)
-			vJoy[0].setButton(b_YLW,0)
-			vJoy[0].setButton(b_BLU,0)
-			vJoy[0].setButton(b_ORN,0)
 
 	#dpad guard
 	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
@@ -101,7 +95,7 @@ def update():
 if starting:
 	#script settings
 	pollingRate = 60	#Hz; default is 60
-	fretOffset = 1		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
 	
 	#vJoy button assignments
 	b_GRN = 0
