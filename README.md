@@ -28,7 +28,7 @@ Increment the `offset` variable in the script to shift the frets further down (t
 ## "Guitar on Keys mode"? What's that?
 This mode is intended specifically for use with Keys charts in [_Phase Shift_](http://www.dwsk.co.uk/index_phase_shift.html).
 
-When you press this button, the script switches to a mode where it essentially emulates the ability to play Keys charts with a guitar controller, like in _Rock Band 3_. The downside to this mode is that you won't be able to see visual feedback of frets being held down, and you will still need to strum every single note, even if they're like an eighth note apart from each other where they would normally be converted to HOPOs in Rock Band. You also won't be able to hold sustain notes, at least not without holding down on the strum button.
+When you press this button, the script switches to a mode where it essentially emulates the ability to play Keys charts with a guitar controller, like in _Rock Band 3_. The downside to this mode is that you won't be able to see visual feedback of frets being held down, and you will still need to strum every single note, even if they're like an eighth note apart from each other where they would normally be converted to HOPOs in Rock Band.
 
 Press the other mode button to exit this mode.
 
