@@ -1,11 +1,14 @@
 def update():	
-	channel	= midi[0].data.channel
-	status	= midi[0].data.status
-	note	= midi[0].data.buffer[0]
-	vel		= midi[0].data.buffer[1]
+	channel	= midi[midiPort].data.channel
+	status	= midi[midiPort].data.status
+	note	= midi[midiPort].data.buffer[0]
+	vel		= midi[midiPort].data.buffer[1]
 	
-	#reset the POV hat when nothing pressed
-	vJoy[0].setAnalogPov(0, -1)
+	#reset a few things when nothing pressed
+	if joystick[joyId].pov[0] != -1: vJoy[joyId].setAnalogPov(0, -1)
+	if joystick[joyId].z != 0: vJoy[joyId].z = 0x4000
+	if joystick[joyId].getDown(b_starPwr): vJoy[joyId].setButton(b_starPwr, False)
+	if joystick[joyId].getDown(b_start): vJoy[joyId].setButton(b_start, False)
 	
 	if '48' in pressed:		#dpad guard Y axis
 		lastStrum = '48'
@@ -40,37 +43,52 @@ def update():
 	elif '53' in pressed and 'mode2' not in inputmode:
 		inputmode.append('mode2')
 		inputmode.remove('mode1')
-
+	
+	#guitar on keys mode (only register held frets on strum)
+	execute = True;
+	if 'mode2' in inputmode: execute = '48' in pressed or '49' in pressed;
+	
 	# mapping MIDI inputs to vJoy
-	if 'mode1' in inputmode:
-		vJoy[0].setButton(b_GRN,G in pressed)	#green
-		vJoy[0].setButton(b_RED,R in pressed)	#red
-		vJoy[0].setButton(b_YLW,Y in pressed)	#yellow
-		vJoy[0].setButton(b_BLU,B in pressed)	#blue
-		vJoy[0].setButton(b_ORN,O in pressed)	#orange
-
-	# guitar on keys mode
-	if 'mode2' in inputmode:
-		if '48' in pressed or '49' in pressed:
-			vJoy[0].setButton(b_GRN,G in pressed)
-			vJoy[0].setButton(b_RED,R in pressed)
-			vJoy[0].setButton(b_YLW,Y in pressed)
-			vJoy[0].setButton(b_BLU,B in pressed)
-			vJoy[0].setButton(b_ORN,O in pressed)
+	# optimised so we don't send vJoy too many repeat button inputs while frets are held down
+	if execute:
+		if G in pressed:	#green
+			if not joystick[joyId].getDown(b_GRN): vJoy[joyId].setButton(b_GRN, True)
+		else:
+			if joystick[joyId].getDown(b_GRN): vJoy[joyId].setButton(b_GRN, False)
+			
+		if R in pressed:	#red
+			if not joystick[joyId].getDown(b_RED): vJoy[joyId].setButton(b_RED, True)
+		else:
+			if joystick[joyId].getDown(b_RED): vJoy[joyId].setButton(b_RED, False)
+			
+		if Y in pressed:	#yellow
+			if not joystick[joyId].getDown(b_YLW): vJoy[joyId].setButton(b_YLW, True)
+		else:
+			if joystick[joyId].getDown(b_YLW): vJoy[joyId].setButton(b_YLW, False)
+			
+		if B in pressed:	#blue
+			if not joystick[joyId].getDown(b_BLU): vJoy[joyId].setButton(b_BLU, True)
+		else:
+			if joystick[joyId].getDown(b_BLU): vJoy[joyId].setButton(b_BLU, False)
+			
+		if O in pressed:	#orange
+			if not joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, True)
+		else:
+			if joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, False)
 
 	#dpad guard
 	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
 	if '66' in pressed and '70' in pressed: pressed.remove(lastNav)
-
-	vJoy[0].setButton(b_start,'68' in pressed)		#start button
-	if '49' in pressed: vJoy[0].setAnalogPov(0, 0)		#strum up
-	if '48' in pressed: vJoy[0].setAnalogPov(0, 18000)	#strum down
-	vJoy[0].setButton(b_starPwr,'cc1' in pressed)		#overdrive/star power
-	if '66' in pressed: vJoy[0].setAnalogPov(0, 9000)	#navigate right
-	if '70' in pressed: vJoy[0].setAnalogPov(0, 27000)	#navigate left
+	
+	if '68' in pressed: vJoy[joyId].setButton(b_start, True)		#start
+	if 'cc1' in pressed: vJoy[joyId].setButton(b_starPwr, True)		#star power/overdrive
+	if '49' in pressed: vJoy[joyId].setAnalogPov(0, 0)				#strum up
+	if '48' in pressed: vJoy[joyId].setAnalogPov(0, 18000)			#strum down	
+	if '66' in pressed: vJoy[joyId].setAnalogPov(0, 9000)			#navigate right
+	if '70' in pressed: vJoy[joyId].setAnalogPov(0, 27000)			#navigate left
 	
 	#whammy
-	vJoy[0].z = filters.mapRange(vel,0,127,0x0001,0x8000) if 'bend' in pressed else 0x4000
+	if 'bend' in pressed: vJoy[joyId].z = filters.mapRange(vel,0,127,0x0001,0x8000)
 	
 	if 'mode1' in inputmode and 'mode2' not in inputmode:
 		mode = "1: Normal guitar mode"
@@ -88,13 +106,13 @@ def update():
 			nanoKey += "[" + x + "]"
 			
 		for y in range(7):
-			if joystick[0].getDown(y):
+			if joystick[joyId].getDown(y):
 				controller += "█│"
 			else:
 				controller += "░│"		
 		
-		if joystick[0].pov[0] == 0: controller += "▲"
-		elif joystick[0].pov[0] == 18000: controller += "▼"
+		if joystick[joyId].pov[0] == 0: controller += "▲"
+		elif joystick[joyId].pov[0] == 18000: controller += "▼"
 			
 		diagnostics.watch(channel)
 		diagnostics.watch(status)
@@ -105,9 +123,11 @@ def update():
 	
 if starting:
 	#script settings
-	pollingRate = 60	#Hz; default is 60
+	pollingRate = 120	#Hz; default is 120
 	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
-	debug = 1			#turn this on to show the script working (may introduce a tiny bit of latency)
+	debug = 0			#turn this on to show the script working (may introduce a tiny bit of latency)
+	midiPort = 0		#MIDI port number
+	joyId = 0			#vjoy controller ID
 	
 	#vJoy button assignments
 	b_GRN = 0
@@ -151,4 +171,4 @@ if starting:
 	lastStrum = lastNav = ''
 	pressed = []	
 	inputmode = ['mode1']
-	midi[0].update += update
+	midi[midiPort].update += update
