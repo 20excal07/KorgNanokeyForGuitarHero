@@ -127,7 +127,7 @@ def update():
 if starting:
 	#script settings
 	pollingRate = 120	#Hz; default is 120
-	fretOffset = 1		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
 	debug = 0			#turn this on to show the script working (may introduce a tiny bit of latency)
 	midiPort = 0		#MIDI port number
 	joyId = 0			#vjoy controller ID
