@@ -80,12 +80,15 @@ def update():
 	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
 	if '66' in pressed and '70' in pressed: pressed.remove(lastNav)
 	
-	if '68' in pressed: vJoy[joyId].setButton(b_start, True)		#start
-	if 'cc1' in pressed: vJoy[joyId].setButton(b_starPwr, True)		#star power/overdrive
+	#star power/overdrive
+	if 'cc1' in pressed:
+		if not joystick[joyId].getDown(b_starPwr): vJoy[joyId].setButton(b_starPwr, True)
+		
 	if '49' in pressed: vJoy[joyId].setAnalogPov(0, 0)				#strum up
 	if '48' in pressed: vJoy[joyId].setAnalogPov(0, 18000)			#strum down	
 	if '66' in pressed: vJoy[joyId].setAnalogPov(0, 9000)			#navigate right
 	if '70' in pressed: vJoy[joyId].setAnalogPov(0, 27000)			#navigate left
+	if '68' in pressed: vJoy[joyId].setButton(b_start, True)		#start
 	
 	#whammy
 	if 'bend' in pressed: vJoy[joyId].z = filters.mapRange(vel,0,127,0x0001,0x8000)
@@ -124,7 +127,7 @@ def update():
 if starting:
 	#script settings
 	pollingRate = 120	#Hz; default is 120
-	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	fretOffset = 1		#increase the offset to shift the fret buttons further down the keyboard; default is 0
 	debug = 0			#turn this on to show the script working (may introduce a tiny bit of latency)
 	midiPort = 0		#MIDI port number
 	joyId = 0			#vjoy controller ID
