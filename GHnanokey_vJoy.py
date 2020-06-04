@@ -34,7 +34,11 @@ def update():
 		pressed.append('bend')
 	elif status.Equals(MidiStatus.PitchBendChange) and vel == 64 and 'bend' in pressed:
 		pressed.remove('bend')
-
+	
+	#dpad guard
+	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
+	if '66' in pressed and '70' in pressed: pressed.remove(lastNav)
+	
 	# switch between button modes	
 	if '52' in pressed and 'mode1' not in inputmode:
 		inputmode.append('mode1')
@@ -74,10 +78,6 @@ def update():
 			if not joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, True)
 		else:
 			if joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, False)
-
-	#dpad guard
-	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
-	if '66' in pressed and '70' in pressed: pressed.remove(lastNav)
 	
 	#star power/overdrive
 	if 'cc1' in pressed:
@@ -129,7 +129,7 @@ def update():
 if starting:
 	#script settings
 	pollingRate = 120	#Hz; default is 120
-	fretOffset = 1		#increase the offset to shift the fret buttons further down the keyboard; default is 0
+	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
 	debug = 0			#turn this on to show the script working (may introduce a tiny bit of latency)
 	midiPort = 0		#MIDI port number
 	joyId = 0			#vjoy controller ID
