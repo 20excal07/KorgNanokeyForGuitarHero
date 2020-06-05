@@ -5,7 +5,6 @@ def update():
 	vel		= midi[midiPort].data.buffer[1]
 	
 	#reset a few things when nothing pressed
-	if joystick[joyId].z != 0: vJoy[joyId].z = 0x4000
 	if joystick[joyId].getDown(b_starPwr): vJoy[joyId].setButton(b_starPwr, False)
 	if joystick[joyId].getDown(b_start): vJoy[joyId].setButton(b_start, False)
 	
@@ -29,11 +28,13 @@ def update():
 		pressed.append('cc' + str(note))	
 	elif status.Equals(MidiStatus.Control) and vel == 0 and ('cc' + str(note)) in pressed:
 		pressed.remove('cc' + str(note))
-
-	if status.Equals(MidiStatus.PitchBendChange) and vel != 64 and 'bend' not in pressed:
-		pressed.append('bend')
-	elif status.Equals(MidiStatus.PitchBendChange) and vel == 64 and 'bend' in pressed:
-		pressed.remove('bend')
+	
+	#whammy
+	if status.Equals(MidiStatus.PitchBendChange) and vel != 64:
+		if vel > 64: vJoy[joyId].z = filters.mapRange(vel,64,127,0x4001,0x8000)
+		else: vJoy[joyId].z = filters.mapRange(vel,63,0,0x4001,0x8000)
+	elif status.Equals(MidiStatus.PitchBendChange) and vel == 64:
+		vJoy[joyId].z = 0x4000
 	
 	#dpad guard
 	if '48' in pressed and '49' in pressed: pressed.remove(lastStrum)
@@ -78,22 +79,17 @@ def update():
 			if not joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, True)
 		else:
 			if joystick[joyId].getDown(b_ORN): vJoy[joyId].setButton(b_ORN, False)
-	
-	#star power/overdrive
-	if 'cc1' in pressed:
-		if not joystick[joyId].getDown(b_starPwr): vJoy[joyId].setButton(b_starPwr, True)
+
+	if 'cc1' in pressed: vJoy[joyId].setButton(b_starPwr, True)		#star power/overdrive
 	
 	#this if/else chain seems to work as a debouncer too
 	if '49' in pressed: vJoy[joyId].setAnalogPov(0, 0)				#strum up
-	elif '48' in pressed: vJoy[joyId].setAnalogPov(0, 18000)			#strum down	
+	elif '48' in pressed: vJoy[joyId].setAnalogPov(0, 18000)		#strum down	
 	elif '66' in pressed: vJoy[joyId].setAnalogPov(0, 9000)			#navigate right
-	elif '70' in pressed: vJoy[joyId].setAnalogPov(0, 27000)			#navigate left
-	else: vJoy[joyId].setAnalogPov(0, -1)
+	elif '70' in pressed: vJoy[joyId].setAnalogPov(0, 27000)		#navigate left
+	elif joystick[joyId].pov[0] != -1: vJoy[joyId].setAnalogPov(0, -1)
 	
 	if '68' in pressed: vJoy[joyId].setButton(b_start, True)		#start
-	
-	#whammy
-	if 'bend' in pressed: vJoy[joyId].z = filters.mapRange(vel,0,127,0x0001,0x8000)
 	
 	if 'mode1' in inputmode and 'mode2' not in inputmode:
 		mode = "1: Normal guitar mode"
@@ -172,8 +168,8 @@ if starting:
 	mode = "(press any key)"
 	diagnostics.watch(whiteKeys)
 	diagnostics.watch(mode)
-		
+	
 	lastStrum = lastNav = ''
-	pressed = []	
+	pressed = []
 	inputmode = ['mode1']
 	midi[midiPort].update += update
