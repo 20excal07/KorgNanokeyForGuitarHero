@@ -1,3 +1,19 @@
+# script settings
+pollingRate = 120	# Hz; default is 120
+fretOffset = 0		# increase the offset to shift the fret buttons further down the keyboard; default is 0
+debug = 0			# turn this on to show the script working (may introduce a tiny bit of latency)
+midiPort = 0		# MIDI port number
+joyId = 0			# vjoy controller ID
+
+# vJoy button assignments
+b_GRN = 0
+b_RED = 1
+b_YLW = 2
+b_BLU = 3
+b_ORN = 4
+b_start = 5
+b_starPwr = 6
+
 def update():	
 	channel	= midi[midiPort].data.channel
 	status	= midi[midiPort].data.status
@@ -121,24 +137,19 @@ def update():
 		diagnostics.watch(vel)	
 		diagnostics.watch(nanoKey)
 		diagnostics.watch(controller)
-	
-if starting:
-	#script settings
-	pollingRate = 120	#Hz; default is 120
-	fretOffset = 0		#increase the offset to shift the fret buttons further down the keyboard; default is 0
-	debug = 0			#turn this on to show the script working (may introduce a tiny bit of latency)
-	midiPort = 0		#MIDI port number
-	joyId = 0			#vjoy controller ID
-	
-	#vJoy button assignments
-	b_GRN = 0
-	b_RED = 1
-	b_YLW = 2
-	b_BLU = 3
-	b_ORN = 4
-	b_start = 5
-	b_starPwr = 6
 
+def reset_vJoy():
+	vJoy[joyId].z = 0x4000
+	vJoy[joyId].setAnalogPov(0, -1)
+	vJoy[joyId].setButton(b_start, False)
+	vJoy[joyId].setButton(b_starPwr, False)
+	vJoy[joyId].setButton(b_GRN, False)
+	vJoy[joyId].setButton(b_RED, False)
+	vJoy[joyId].setButton(b_YLW, False)
+	vJoy[joyId].setButton(b_BLU, False)
+	vJoy[joyId].setButton(b_ORN, False)
+
+if starting:
 	system.setThreadTiming(TimingTypes.HighresSystemTimer)
 	system.threadExecutionInterval = 1000 / pollingRate
 
@@ -172,4 +183,9 @@ if starting:
 	lastStrum = lastNav = ''
 	pressed = []
 	inputmode = ['mode1']
+	
+	reset_vJoy()
 	midi[midiPort].update += update
+	
+if stopping:
+	reset_vJoy()
